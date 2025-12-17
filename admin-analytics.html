@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analytics - CognitivePath</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+        }
+
+        .header-subtitle {
+            color: #7f8c8d;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-home {
+            background: #34495e;
+            color: white;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .kpi-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .kpi-subtext {
+            color: #95a5a6;
+            font-size: 0.85em;
+        }
+
+        .kpi-trend {
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            color: #27ae60;
+        }
+
+        .trend-down {
+            color: #e74c3c;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85em;
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 300px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .roi-calculator {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-field label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        .input-field input {
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calculator-results {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            padding-top: 20px;
+            margin-top: 10px;
+            border-top: 3px solid #667eea;
+        }
+
+        .result-label {
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .result-value.highlight {
+            color: #27ae60;
+            font-size: 1.8em;
+        }
+
+        .provider-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .provider-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .provider-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .provider-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .provider-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .performance-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .badge-gold {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-silver {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .badge-bronze {
+            background: #e67e22;
+            color: white;
+        }
+
+        .heatmap-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        .heatmap-high {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .heatmap-medium {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .heatmap-low {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .region-name {
+            font-size: 0.75em;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            border: 2px solid #ecf0f1;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kpi-card, .card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Admin Analytics Dashboard</h1>
+                <div class="header-subtitle">System-Wide Metrics, ROI Analysis & Performance Benchmarking</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="exportReport()">Export Report</button>
+                <button class="btn btn-home" onclick="location.href='index.html'">Home</button>
+            </div>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Patients Detected</div>
+                <div class="kpi-value">1,247</div>
+                <div class="kpi-subtext">Across all facilities</div>
+                <div class="kpi-trend trend-up">▲ 23% vs. last month</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Detection Rate</div>
+                <div class="kpi-value">8.3%</div>
+                <div class="kpi-subtext">Of screened population</div>
+                <div class="kpi-trend trend-up">▲ 1.2% vs. baseline</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Active Interventions</div>
+                <div class="kpi-value">892</div>
+                <div class="kpi-subtext">71.5% enrollment rate</div>
+                <div class="kpi-trend trend-up">▲ 156 this month</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Average Adherence</div>
+                <div class="kpi-value">78.4%</div>
+                <div class="kpi-subtext">Across all participants</div>
+                <div class="kpi-trend trend-up">▲ 5.2% improvement</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Projected Annual Savings</div>
+                <div class="kpi-value">$42.8M</div>
+                <div class="kpi-subtext">Based on current cohort</div>
+                <div class="kpi-trend trend-up">▲ $8.3M vs. projection</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">System ROI</div>
+                <div class="kpi-value">25.3:1</div>
+                <div class="kpi-subtext">Savings to cost ratio</div>
+                <div class="kpi-trend trend-up">▲ Above target</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Interactive ROI Calculator</h2>
+                </div>
+                <div class="roi-calculator">
+                    <h3 style="margin-bottom: 20px; color: #2c3e50;">Configure Your Scenario</h3>
+                    <div class="calculator-input-group">
+                        <div class="input-field">
+                            <label>Number of Patients Screened</label>
+                            <input type="number" id="patientsScreened" value="15000" oninput="calculateROI()">
+                        </div>
+                        <div class="input-field">
+                            <label>Expected Detection Rate (%)</label>
+                            <input type="number" id="detectionRate" value="8.3" step="0.1" oninput="calculateROI()">
+                        </div>
+                        <div class="input-field">
+                            <label>Intervention Enrollment Rate (%)</label>
+                            <input type="number" id="enrollmentRate" value="71.5" step="0.1" oninput="calculateROI()">
+                        </div>
+                        <div class="input-field">
+                            <label>Prevention Success Rate (%)</label>
+                            <input type="number" id="preventionRate" value="50" step="0.1" oninput="calculateROI()">
+                        </div>
+                        <div class="input-field">
+                            <label>Cost per Dementia Case</label>
+                            <input type="number" id="costPerCase" value="300000" oninput="calculateROI()">
+                        </div>
+                        <div class="input-field">
+                            <label>Cost per Patient (Screening + Intervention)</label>
+                            <input type="number" id="costPerPatient" value="12000" oninput="calculateROI()">
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="calculateROI()">Calculate ROI</button>
+                    </div>
+                </div>
+                <div class="calculator-results" id="roiResults">
+                    <!-- Results populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Financial Impact</h2>
+                </div>
+                <div style="margin: 20px 0;">
+                    <div style="padding: 15px; background: #e8f5e9; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #27ae60; font-size: 0.9em; margin-bottom: 5px;">Total Cost Avoidance</div>
+                        <div style="color: #2c3e50; font-size: 2em; font-weight: bold;">$374.2M</div>
+                        <div style="color: #7f8c8d; font-size: 0.85em; margin-top: 5px;">Lifetime savings projection</div>
+                    </div>
+                    <div style="padding: 15px; background: #e3f2fd; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="color: #3498db; font-size: 0.9em; margin-bottom: 5px;">System Implementation Cost</div>
+                        <div style="color: #2c3e50; font-size: 2em; font-weight: bold;">$14.8M</div>
+                        <div style="color: #7f8c8d; font-size: 0.85em; margin-top: 5px;">Total investment to date</div>
+                    </div>
+                    <div style="padding: 15px; background: #fff3e0; border-radius: 8px;">
+                        <div style="color: #f39c12; font-size: 0.9em; margin-bottom: 5px;">Break-Even Point</div>
+                        <div style="color: #2c3e50; font-size: 2em; font-weight: bold;">6.2 months</div>
+                        <div style="color: #7f8c8d; font-size: 0.85em; margin-top: 5px;">From program start</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Detection & Intervention Trends</h2>
+                    <div class="tab-container" style="margin: 0; border: none;">
+                        <button class="tab active" onclick="switchChart('monthly')">Monthly</button>
+                        <button class="tab" onclick="switchChart('quarterly')">Quarterly</button>
+                        <button class="tab" onclick="switchChart('yearly')">Yearly</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    Detection Trend Chart<br>
+                    <small>Showing steady 23% month-over-month growth</small><br>
+                    <small>Peak detection: November 2025 (1,247 patients)</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Geographic Distribution</h2>
+                </div>
+                <div class="heatmap-container">
+                    <div class="heatmap-grid">
+                        <div class="heatmap-cell heatmap-high">
+                            <div style="font-size: 1.8em;">342</div>
+                            <div class="region-name">Northeast</div>
+                        </div>
+                        <div class="heatmap-cell heatmap-medium">
+                            <div style="font-size: 1.8em;">289</div>
+                            <div class="region-name">Southeast</div>
+                        </div>
+                        <div class="heatmap-cell heatmap-high">
+                            <div style="font-size: 1.8em;">378</div>
+                            <div class="region-name">Midwest</div>
+                        </div>
+                        <div class="heatmap-cell heatmap-medium">
+                            <div style="font-size: 1.8em;">156</div>
+                            <div class="region-name">Southwest</div>
+                        </div>
+                        <div class="heatmap-cell heatmap-low">
+                            <div style="font-size: 1.8em;">82</div>
+                            <div class="region-name">West</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
+                        Click regions for detailed facility breakdown
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <div class="card-header">
+                <h2 class="card-title">Provider Performance Benchmarking</h2>
+                <div class="card-actions">
+                    <button class="btn btn-small btn-primary" onclick="exportProviderData()">Export Data</button>
+                </div>
+            </div>
+            <table class="provider-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Provider Name</th>
+                        <th>Facility</th>
+                        <th>Patients Detected</th>
+                        <th>Referral Rate</th>
+                        <th>Detection Quality</th>
+                        <th>Performance Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge badge-gold">1st</span></td>
+                        <td><strong>Dr. Sarah Johnson</strong></td>
+                        <td>Memorial Hospital</td>
+                        <td>127</td>
+                        <td>94.5%</td>
+                        <td>
+                            <div>98.2%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 98.2%"></div></div>
+                        </td>
+                        <td><strong style="color: #27ae60;">96.8</strong></td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-silver">2nd</span></td>
+                        <td><strong>Dr. Raj Patel</strong></td>
+                        <td>City Medical Center</td>
+                        <td>113</td>
+                        <td>91.2%</td>
+                        <td>
+                            <div>95.7%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 95.7%"></div></div>
+                        </td>
+                        <td><strong style="color: #27ae60;">94.3</strong></td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-bronze">3rd</span></td>
+                        <td><strong>Dr. Emily Williams</strong></td>
+                        <td>General Hospital</td>
+                        <td>98</td>
+                        <td>89.8%</td>
+                        <td>
+                            <div>93.4%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 93.4%"></div></div>
+                        </td>
+                        <td><strong style="color: #27ae60;">91.6</strong></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>Dr. Michael Kim</strong></td>
+                        <td>University Medical</td>
+                        <td>89</td>
+                        <td>87.6%</td>
+                        <td>
+                            <div>91.8%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 91.8%"></div></div>
+                        </td>
+                        <td><strong style="color: #27ae60;">89.7</strong></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>Dr. Lisa Anderson</strong></td>
+                        <td>Memorial Hospital</td>
+                        <td>76</td>
+                        <td>85.3%</td>
+                        <td>
+                            <div>90.2%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 90.2%"></div></div>
+                        </td>
+                        <td><strong style="color: #27ae60;">87.8</strong></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Dr. David Martinez</strong></td>
+                        <td>City Medical Center</td>
+                        <td>72</td>
+                        <td>83.9%</td>
+                        <td>
+                            <div>88.9%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 88.9%"></div></div>
+                        </td>
+                        <td><strong style="color: #f39c12;">86.4</strong></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><strong>Dr. Jennifer Lee</strong></td>
+                        <td>General Hospital</td>
+                        <td>68</td>
+                        <td>81.5%</td>
+                        <td>
+                            <div>87.3%</div>
+                            <div class="performance-bar"><div class="performance-fill" style="width: 87.3%"></div></div>
+                        </td>
+                        <td><strong style="color: #f39c12;">84.4</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card full-width">
+            <div class="card-header">
+                <h2 class="card-title">Research Data Export</h2>
+            </div>
+            <div style="margin-bottom: 20px; color: #7f8c8d;">
+                Export anonymized patient data for clinical research, randomized controlled trials (RCTs), and academic publications. All exports are HIPAA-compliant and fully de-identified.
+            </div>
+            <div class="export-options">
+                <button class="export-btn" onclick="exportData('aggregate')">📊 Aggregate Statistics (CSV)</button>
+                <button class="export-btn" onclick="exportData('anonymized')">🔒 Anonymized Patient Records (CSV)</button>
+                <button class="export-btn" onclick="exportData('outcomes')">📈 Intervention Outcomes (Excel)</button>
+                <button class="export-btn" onclick="exportData('longitudinal')">📅 Longitudinal Study Data (CSV)</button>
+                <button class="export-btn" onclick="exportData('cognitive')">🧠 Cognitive Assessment Scores (JSON)</button>
+                <button class="export-btn" onclick="exportData('adherence')">✅ Adherence & Engagement Metrics (CSV)</button>
+                <button class="export-btn" onclick="exportData('financial')">💰 Financial Impact Analysis (Excel)</button>
+                <button class="export-btn" onclick="exportData('api')">🔌 API Access for Real-time Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateROI() {
+            const patientsScreened = parseInt(document.getElementById('patientsScreened').value) || 0;
+            const detectionRate = parseFloat(document.getElementById('detectionRate').value) || 0;
+            const enrollmentRate = parseFloat(document.getElementById('enrollmentRate').value) || 0;
+            const preventionRate = parseFloat(document.getElementById('preventionRate').value) || 0;
+            const costPerCase = parseInt(document.getElementById('costPerCase').value) || 0;
+            const costPerPatient = parseInt(document.getElementById('costPerPatient').value) || 0;
+
+            const patientsDetected = Math.round(patientsScreened * (detectionRate / 100));
+            const patientsEnrolled = Math.round(patientsDetected * (enrollmentRate / 100));
+            const casesPrevented = Math.round(patientsEnrolled * (preventionRate / 100));
+            const totalCostAvoidance = casesPrevented * costPerCase;
+            const totalProgramCost = patientsEnrolled * costPerPatient;
+            const netSavings = totalCostAvoidance - totalProgramCost;
+            const roi = totalProgramCost > 0 ? (totalCostAvoidance / totalProgramCost).toFixed(1) : 0;
+
+            document.getElementById('roiResults').innerHTML = `
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">Projected Results</h3>
+                <div class="result-row">
+                    <span class="result-label">Patients Detected:</span>
+                    <span class="result-value">${patientsDetected.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Patients Enrolled in Intervention:</span>
+                    <span class="result-value">${patientsEnrolled.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Dementia Cases Prevented:</span>
+                    <span class="result-value">${casesPrevented.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Cost Avoidance:</span>
+                    <span class="result-value">$${totalCostAvoidance.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Total Program Cost:</span>
+                    <span class="result-value">$${totalProgramCost.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Net Savings:</span>
+                    <span class="result-value">$${netSavings.toLocaleString()}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Return on Investment:</span>
+                    <span class="result-value highlight">${roi}:1</span>
+                </div>
+            `;
+        }
+
+        function switchChart(timeframe) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            alert(`Switching to ${timeframe} view...`);
+        }
+
+        function exportReport() {
+            alert('📊 Generating Comprehensive Admin Report...\n\n' +
+                  'Report includes:\n' +
+                  '• System-wide detection metrics\n' +
+                  '• Financial impact analysis\n' +
+                  '• Provider performance rankings\n' +
+                  '• Geographic distribution data\n' +
+                  '• Trend analysis and projections\n\n' +
+                  'Format: PDF + Excel\n' +
+                  'Report will be emailed within 10 minutes.');
+        }
+
+        function exportProviderData() {
+            alert('📥 Exporting Provider Performance Data...\n\n' +
+                  'Format: CSV\n' +
+                  'Records: All providers\n' +
+                  'File: provider_performance_export.csv\n\n' +
+                  'Export includes:\n' +
+                  '• Detection counts\n' +
+                  '• Referral rates\n' +
+                  '• Quality scores\n' +
+                  '• Performance benchmarks');
+        }
+
+        function exportData(type) {
+            const exportTypes = {
+                'aggregate': 'Aggregate Statistics',
+                'anonymized': 'Anonymized Patient Records',
+                'outcomes': 'Intervention Outcomes',
+                'longitudinal': 'Longitudinal Study Data',
+                'cognitive': 'Cognitive Assessment Scores',
+                'adherence': 'Adherence & Engagement Metrics',
+                'financial': 'Financial Impact Analysis',
+                'api': 'API Access Documentation'
+            };
+
+            if (type === 'api') {
+                alert('🔌 API Access for Real-time Data\n\n' +
+                      'Contact your system administrator for:\n' +
+                      '• API credentials\n' +
+                      '• Integration documentation\n' +
+                      '• Rate limits and usage guidelines\n\n' +
+                      'API Features:\n' +
+                      '• Real-time patient data\n' +
+                      '• Automated reporting\n' +
+                      '• Custom query endpoints\n' +
+                      '• FHIR-compliant data format');
+            } else {
+                alert(`📥 Exporting ${exportTypes[type]}...\n\n` +
+                      'Data Processing:\n' +
+                      '• Anonymizing patient identifiers\n' +
+                      '• Applying HIPAA compliance filters\n' +
+                      '• Generating export file\n\n' +
+                      'Your export will be ready shortly.\n' +
+                      'Download link will be sent to your email.');
+            }
+        }
+
+        // Initialize ROI calculator with default values
+        calculateROI();
+
+        console.log('Admin Analytics Dashboard Loaded');
+        console.log('Total System Patients: 1,247');
+        console.log('Projected Annual Savings: $42.8M');
+        console.log('System ROI: 25.3:1');
+    </script>
+</body>
+</html>

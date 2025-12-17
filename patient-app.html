@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CognitivePath - Patient App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* Mobile App Container */
+        .phone-frame {
+            max-width: 420px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 12px solid #2c3e50;
+            position: relative;
+            min-height: 90vh;
+        }
+
+        .notch {
+            width: 150px;
+            height: 30px;
+            background: #2c3e50;
+            margin: 0 auto;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .app-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: calc(90vh - 54px);
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .greeting h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        /* Cognitive Score Card */
+        .score-card {
+            background: white;
+            margin: 20px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .score-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .score-label {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .score-trend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .trend-item {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .trend-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .trend-label {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        /* Activity Cards */
+        .activity-section {
+            padding: 0 20px 20px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title a {
+            color: white;
+            font-size: 0.8em;
+            text-decoration: none;
+        }
+
+        .activity-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .activity-icon {
+            font-size: 2em;
+        }
+
+        .activity-status {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .status-complete {
+            background: #d4edda;
+            color: #27ae60;
+        }
+
+        .activity-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .activity-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+
+        .activity-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            color: #7f8c8d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* Streak Widget */
+        .streak-widget {
+            background: white;
+            margin: 0 20px 20px;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .streak-item {
+            text-align: center;
+        }
+
+        .streak-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f39c12;
+        }
+
+        .streak-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 396px;
+            background: white;
+            border-radius: 30px 30px 0 0;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 12px;
+            transition: background 0.3s;
+            flex: 1;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-item.active .nav-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 0.75em;
+        }
+
+        /* AI Coach Message */
+        .coach-message {
+            background: white;
+            margin: 0 20px 20px;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .coach-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .coach-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .coach-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .coach-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Modal for Exercises */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .exercise-content {
+            margin: 25px 0;
+        }
+
+        .exercise-question {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-btn {
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .answer-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #27ae60;
+        }
+
+        .answer-btn.incorrect {
+            background: #f8d7da;
+            border-color: #e74c3c;
+        }
+
+        .exercise-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .feedback-correct {
+            background: #d4edda;
+            color: #27ae60;
+        }
+
+        .feedback-incorrect {
+            background: #f8d7da;
+            color: #e74c3c;
+        }
+
+        .btn-next {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .badge-earned {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .badge-icon {
+            font-size: 5em;
+            margin-bottom: 15px;
+        }
+
+        .badge-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .badge-desc {
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="app-container">
+            <!-- Header -->
+            <div class="app-header">
+                <div class="greeting">
+                    <h2>Hello, Jane! 👋</h2>
+                    <p>Day 42 of your cognitive journey</p>
+                </div>
+                <div class="profile-pic">👤</div>
+            </div>
+
+            <!-- Cognitive Score Card -->
+            <div class="score-card">
+                <h3>Your Cognitive Score</h3>
+                <div class="score-circle">
+                    <svg width="150" height="150">
+                        <circle cx="75" cy="75" r="65" fill="none" stroke="#ecf0f1" stroke-width="12"/>
+                        <circle cx="75" cy="75" r="65" fill="none" stroke="#27ae60" stroke-width="12"
+                                stroke-dasharray="408" stroke-dashoffset="140" stroke-linecap="round"
+                                transform="rotate(-90 75 75)"/>
+                    </svg>
+                    <div class="score-number">68</div>
+                </div>
+                <p class="score-label">Improving! +16 points from baseline</p>
+                <div class="score-trend">
+                    <div class="trend-item">
+                        <div class="trend-value">📈</div>
+                        <div class="trend-label">Trend</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-value">87%</div>
+                        <div class="trend-label">This Week</div>
+                    </div>
+                    <div class="trend-item">
+                        <div class="trend-value">30%</div>
+                        <div class="trend-label">Risk ↓</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak Widget -->
+            <div class="streak-widget">
+                <div class="streak-item">
+                    <div class="streak-number">🔥 5</div>
+                    <div class="streak-label">Day Streak</div>
+                </div>
+                <div class="streak-item">
+                    <div class="streak-number">⭐ 245</div>
+                    <div class="streak-label">Total Points</div>
+                </div>
+                <div class="streak-item">
+                    <div class="streak-number">🏆 4</div>
+                    <div class="streak-label">Badges</div>
+                </div>
+            </div>
+
+            <!-- AI Coach Message -->
+            <div class="coach-message">
+                <div class="coach-header">
+                    <div class="coach-avatar">🤖</div>
+                    <div>
+                        <div class="coach-name">Your AI Health Coach</div>
+                        <div style="font-size: 0.85em; color: #95a5a6;">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="coach-text">
+                    <strong>Great progress this week, Jane!</strong> Your cognitive exercises are showing real results.
+                    Your word recall improved by 15% and your processing speed is faster. Keep going with your daily routine –
+                    you're on track to reach your 6-month goal! 🎯
+                </div>
+            </div>
+
+            <!-- Today's Activities -->
+            <div class="activity-section">
+                <div class="section-title">
+                    <span>📋 Today's Activities</span>
+                    <a href="#">View All</a>
+                </div>
+
+                <div class="activity-card" onclick="startExercise('memory')">
+                    <div class="activity-header">
+                        <div class="activity-icon">🧠</div>
+                        <div class="activity-status status-pending">Pending</div>
+                    </div>
+                    <div class="activity-title">Memory Exercise</div>
+                    <div class="activity-description">Word recall and paired associations</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">0/10</div>
+                    </div>
+                </div>
+
+                <div class="activity-card" onclick="startExercise('language')">
+                    <div class="activity-header">
+                        <div class="activity-icon">💬</div>
+                        <div class="activity-status status-pending">Pending</div>
+                    </div>
+                    <div class="activity-title">Language Fluency</div>
+                    <div class="activity-description">Vocabulary and verbal fluency tasks</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">0/10</div>
+                    </div>
+                </div>
+
+                <div class="activity-card" onclick="startExercise('reasoning')">
+                    <div class="activity-header">
+                        <div class="activity-icon">🎯</div>
+                        <div class="activity-status status-complete">Completed</div>
+                    </div>
+                    <div class="activity-title">Problem Solving</div>
+                    <div class="activity-description">Pattern recognition and logic puzzles</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">10/10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Tracking -->
+            <div class="activity-section">
+                <div class="section-title">
+                    <span>🌟 Lifestyle Tracking</span>
+                    <a href="#">Log Activity</a>
+                </div>
+
+                <div class="activity-card" onclick="logActivity('sleep')">
+                    <div class="activity-header">
+                        <div class="activity-icon">😴</div>
+                        <div class="activity-status status-complete">Logged</div>
+                    </div>
+                    <div class="activity-title">Sleep Quality</div>
+                    <div class="activity-description">Last night: 7.5 hours - Good quality</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 93%"></div>
+                        </div>
+                        <div class="progress-text">7.5/8h</div>
+                    </div>
+                </div>
+
+                <div class="activity-card" onclick="logActivity('exercise')">
+                    <div class="activity-header">
+                        <div class="activity-icon">🏃‍♀️</div>
+                        <div class="activity-status status-pending">Not Yet</div>
+                    </div>
+                    <div class="activity-title">Physical Exercise</div>
+                    <div class="activity-description">Goal: 30 minutes walking today</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">0/30 min</div>
+                    </div>
+                </div>
+
+                <div class="activity-card" onclick="logActivity('social')">
+                    <div class="activity-header">
+                        <div class="activity-icon">👥</div>
+                        <div class="activity-status status-complete">Done</div>
+                    </div>
+                    <div class="activity-title">Social Engagement</div>
+                    <div class="activity-description">Book club meeting attended</div>
+                    <div class="activity-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">✓ Complete</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('exercises')">
+                    <div class="nav-icon">🧠</div>
+                    <div class="nav-label">Exercises</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('progress')">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-label">Progress</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('community')">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-label">Community</div>
+                </div>
+                <div class="nav-item" onclick="location.href='index.html'">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">More</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Modal -->
+    <div id="exerciseModal" class="modal">
+        <div class="modal-content" style="position: relative;">
+            <span class="close-modal" onclick="closeExercise()">×</span>
+            <div class="modal-header">
+                <h2 id="exerciseTitle">Memory Exercise</h2>
+                <p style="color: #7f8c8d;">Question <span id="questionNumber">1</span> of 10</p>
+            </div>
+            <div class="exercise-content" id="exerciseContent">
+                <!-- Exercise content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentExercise = '';
+        let currentQuestion = 1;
+        let correctAnswers = 0;
+
+        const exercises = {
+            memory: {
+                title: 'Memory Exercise',
+                questions: [
+                    {
+                        question: 'Study these words for 10 seconds:\n\nAPPLE, CHAIR, RIVER, CLOUD, GUITAR\n\nNow, which word was in the list?',
+                        options: ['APPLE', 'TABLE', 'OCEAN', 'PIANO'],
+                        correct: 0
+                    },
+                    {
+                        question: 'What was the second word in the previous list?',
+                        options: ['APPLE', 'CHAIR', 'RIVER', 'CLOUD'],
+                        correct: 1
+                    },
+                    {
+                        question: 'Remember this number: 7-3-9-2. What is the third digit?',
+                        options: ['7', '3', '9', '2'],
+                        correct: 2
+                    }
+                ]
+            },
+            language: {
+                title: 'Language Fluency',
+                questions: [
+                    {
+                        question: 'Which word is a synonym for "happy"?',
+                        options: ['Sad', 'Joyful', 'Angry', 'Tired'],
+                        correct: 1
+                    },
+                    {
+                        question: 'Complete the phrase: "A penny saved is a penny ___"',
+                        options: ['lost', 'earned', 'spent', 'found'],
+                        correct: 1
+                    },
+                    {
+                        question: 'What word means the opposite of "difficult"?',
+                        options: ['Hard', 'Easy', 'Complex', 'Tough'],
+                        correct: 1
+                    }
+                ]
+            },
+            reasoning: {
+                title: 'Problem Solving',
+                questions: [
+                    {
+                        question: 'If 2 + 2 = 4, and 4 + 4 = 8, what is 8 + 8?',
+                        options: ['12', '14', '16', '18'],
+                        correct: 2
+                    },
+                    {
+                        question: 'Which shape comes next: Circle, Square, Circle, Square, ___?',
+                        options: ['Triangle', 'Circle', 'Rectangle', 'Pentagon'],
+                        correct: 1
+                    },
+                    {
+                        question: 'If all roses are flowers, and some flowers are red, are all roses red?',
+                        options: ['Yes', 'No', 'Maybe', 'Cannot determine'],
+                        correct: 1
+                    }
+                ]
+            }
+        };
+
+        function startExercise(type) {
+            currentExercise = type;
+            currentQuestion = 1;
+            correctAnswers = 0;
+            document.getElementById('exerciseModal').classList.add('active');
+            document.getElementById('exerciseTitle').textContent = exercises[type].title;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const exercise = exercises[currentExercise];
+            const question = exercise.questions[currentQuestion - 1];
+
+            document.getElementById('questionNumber').textContent = currentQuestion;
+
+            const content = `
+                <div class="exercise-question">${question.question.replace(/\n/g, '<br>')}</div>
+                <div class="answer-options">
+                    ${question.options.map((opt, idx) =>
+                        `<button class="answer-btn" onclick="checkAnswer(${idx})">${opt}</button>`
+                    ).join('')}
+                </div>
+                <div id="feedback" class="exercise-feedback" style="display: none;"></div>
+            `;
+
+            document.getElementById('exerciseContent').innerHTML = content;
+        }
+
+        function checkAnswer(selected) {
+            const exercise = exercises[currentExercise];
+            const question = exercise.questions[currentQuestion - 1];
+            const buttons = document.querySelectorAll('.answer-btn');
+            const feedback = document.getElementById('feedback');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === question.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === selected && selected !== question.correct) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (selected === question.correct) {
+                correctAnswers++;
+                feedback.className = 'exercise-feedback feedback-correct';
+                feedback.textContent = '✓ Correct! Great job!';
+            } else {
+                feedback.className = 'exercise-feedback feedback-incorrect';
+                feedback.textContent = '✗ Not quite. The correct answer is highlighted.';
+            }
+
+            feedback.style.display = 'block';
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'btn-next';
+            nextBtn.textContent = currentQuestion < exercise.questions.length ? 'Next Question' : 'Complete Exercise';
+            nextBtn.onclick = () => {
+                if (currentQuestion < exercise.questions.length) {
+                    currentQuestion++;
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            };
+
+            document.getElementById('exerciseContent').appendChild(nextBtn);
+        }
+
+        function showResults() {
+            const exercise = exercises[currentExercise];
+            const percentage = Math.round((correctAnswers / exercise.questions.length) * 100);
+
+            let badge = '';
+            let badgeEmoji = '';
+            if (percentage >= 90) {
+                badge = 'Master';
+                badgeEmoji = '🏆';
+            } else if (percentage >= 70) {
+                badge = 'Expert';
+                badgeEmoji = '⭐';
+            } else {
+                badge = 'Good Effort';
+                badgeEmoji = '👍';
+            }
+
+            document.getElementById('exerciseContent').innerHTML = `
+                <div class="badge-earned">
+                    <div class="badge-icon">${badgeEmoji}</div>
+                    <div class="badge-title">${badge}!</div>
+                    <div class="badge-desc">
+                        You scored ${correctAnswers}/${exercise.questions.length} (${percentage}%)
+                    </div>
+                    <div style="margin-top: 20px; color: #27ae60; font-weight: 600;">
+                        +25 Points Earned!
+                    </div>
+                    <button class="btn-next" onclick="closeExercise()">Done</button>
+                </div>
+            `;
+        }
+
+        function closeExercise() {
+            document.getElementById('exerciseModal').classList.remove('active');
+            // Update UI to show completion
+            setTimeout(() => {
+                alert('✓ Exercise completed!\n\n+25 points added to your score\nKeep up the great work!');
+            }, 300);
+        }
+
+        function logActivity(type) {
+            const messages = {
+                sleep: '😴 Log your sleep quality for last night.\n\nHours: [7.5]\nQuality: [Good]\n\n✓ Sleep logged successfully!',
+                exercise: '🏃‍♀️ Log your physical activity.\n\nActivity: [Walking]\nDuration: [30 minutes]\n\n✓ Exercise logged! Great job staying active!',
+                social: '👥 Log your social engagement.\n\nActivity: [Book club meeting]\nDuration: [2 hours]\n\n✓ Social activity logged! Staying connected is important!'
+            };
+            alert(messages[type] || 'Activity logged successfully!');
+        }
+
+        function showScreen(screen) {
+            const screens = {
+                exercises: '🧠 All Exercises\n\n• Memory Training (10 min)\n• Language Fluency (10 min)\n• Problem Solving (10 min)\n• Processing Speed (10 min)\n• Attention Focus (10 min)',
+                progress: '📊 Your Progress\n\nCognitive Score: 68/100 (+16)\nExercises Completed: 127\nStreak: 5 days\nTotal Points: 245\n\nYou\'re in the top 15% of users!',
+                community: '👥 Community\n\n• Join support groups\n• Share progress\n• Get motivation\n• Connect with others\n\nActive groups: 12\nMembers: 2,847'
+            };
+            alert(screens[screen] || 'Feature coming soon!');
+        }
+
+        console.log('Patient App Loaded');
+        console.log('Current Score: 68/100 (+16 from baseline)');
+        console.log('Streak: 5 days | Points: 245 | Badges: 4');
+    </script>
+</body>
+</html>

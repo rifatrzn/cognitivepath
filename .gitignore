@@ -1,0 +1,19 @@
+node_modules
+
+# Exclude documentation files (keep only README.md)
+IMPLEMENTATION_SUMMARY.md
+SETUP_GUIDE.md
+PROJECT_STRUCTURE.txt
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Management - CognitivePath</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+        }
+
+        .header-subtitle {
+            color: #7f8c8d;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-home {
+            background: #34495e;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85em;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            background: #27ae60;
+        }
+
+        .status-warning {
+            background: #f39c12;
+        }
+
+        .status-offline {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status-details {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .site-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .site-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .site-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .site-info {
+            flex: 1;
+        }
+
+        .site-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .site-meta {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+
+        .site-stats {
+            display: flex;
+            gap: 20px;
+            margin-right: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: #7f8c8d;
+        }
+
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .integration-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .integration-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .integration-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .integration-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .integration-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-connected {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f39c12;
+        }
+
+        .status-error {
+            background: #fee;
+            color: #e74c3c;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .role-coordinator {
+            background: #3498db;
+            color: white;
+        }
+
+        .role-provider {
+            background: #27ae60;
+            color: white;
+        }
+
+        .role-viewer {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: opacity 0.3s;
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .action-btn.danger {
+            background: #e74c3c;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .compliance-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+
+        .compliance-item.compliant {
+            border-color: #27ae60;
+        }
+
+        .compliance-item.warning {
+            border-color: #f39c12;
+        }
+
+        .compliance-item.critical {
+            border-color: #e74c3c;
+        }
+
+        .compliance-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .compliance-status {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .compliance-date {
+            font-size: 0.8em;
+            color: #95a5a6;
+        }
+
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+
+        .metric-trend {
+            margin-top: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .trend-good {
+            color: #27ae60;
+        }
+
+        .trend-bad {
+            color: #e74c3c;
+        }
+
+        .audit-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .audit-entry {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            gap: 15px;
+        }
+
+        .audit-entry:hover {
+            background: #f8f9fa;
+        }
+
+        .audit-time {
+            min-width: 140px;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .audit-content {
+            flex: 1;
+        }
+
+        .audit-action {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .audit-details {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+
+        .api-config {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .config-value {
+            color: #7f8c8d;
+            font-family: monospace;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-card, .card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>System Management Portal</h1>
+                <div class="header-subtitle">Infrastructure, Integration, Security & Compliance Management</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-warning" onclick="viewAlerts()">View Alerts (3)</button>
+                <button class="btn btn-home" onclick="location.href='index.html'">Home</button>
+            </div>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">System Status</div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="status-details">
+                    <strong>All Systems Operational</strong><br>
+                    Uptime: 99.97%<br>
+                    Last restart: 23 days ago
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">Database Health</div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="status-details">
+                    <strong>Optimal Performance</strong><br>
+                    Query time: 12ms avg<br>
+                    Storage: 2.3TB / 10TB
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">API Services</div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="status-details">
+                    <strong>All Endpoints Active</strong><br>
+                    Response time: 85ms avg<br>
+                    Requests: 2.4M today
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">Backup Systems</div>
+                    <div class="status-indicator status-warning"></div>
+                </div>
+                <div class="status-details">
+                    <strong>Backup Running</strong><br>
+                    Last backup: 2 hours ago<br>
+                    Next scheduled: 10:00 PM
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2 class="card-title">Multi-Site Management (5 Active Hospital Systems)</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-primary" onclick="addSite()">+ Add Site</button>
+                        <button class="btn btn-small btn-success" onclick="syncAll()">Sync All</button>
+                    </div>
+                </div>
+                <div class="site-list">
+                    <div class="site-item">
+                        <div class="site-info">
+                            <div class="site-name">Memorial Hospital System</div>
+                            <div class="site-meta">Location: Boston, MA | Deployed: Jan 2025 | Status: Active</div>
+                        </div>
+                        <div class="site-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">342</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">28</div>
+                                <div class="stat-label">Providers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">99.8%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="configureSite('Memorial')">Configure</button>
+                            <button class="action-btn" onclick="viewSiteLogs('Memorial')">Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="site-item">
+                        <div class="site-info">
+                            <div class="site-name">City Medical Center</div>
+                            <div class="site-meta">Location: Chicago, IL | Deployed: Feb 2025 | Status: Active</div>
+                        </div>
+                        <div class="site-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">289</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">21</div>
+                                <div class="stat-label">Providers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">99.5%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="configureSite('City Medical')">Configure</button>
+                            <button class="action-btn" onclick="viewSiteLogs('City Medical')">Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="site-item">
+                        <div class="site-info">
+                            <div class="site-name">General Hospital Network</div>
+                            <div class="site-meta">Location: Houston, TX | Deployed: Mar 2025 | Status: Active</div>
+                        </div>
+                        <div class="site-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">256</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">19</div>
+                                <div class="stat-label">Providers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">99.9%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="configureSite('General')">Configure</button>
+                            <button class="action-btn" onclick="viewSiteLogs('General')">Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="site-item">
+                        <div class="site-info">
+                            <div class="site-name">University Medical Center</div>
+                            <div class="site-meta">Location: San Francisco, CA | Deployed: Apr 2025 | Status: Active</div>
+                        </div>
+                        <div class="site-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">234</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">17</div>
+                                <div class="stat-label">Providers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">99.6%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="configureSite('University')">Configure</button>
+                            <button class="action-btn" onclick="viewSiteLogs('University')">Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="site-item">
+                        <div class="site-info">
+                            <div class="site-name">Regional Health System</div>
+                            <div class="site-meta">Location: Atlanta, GA | Deployed: May 2025 | Status: Active</div>
+                        </div>
+                        <div class="site-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">126</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Providers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">99.4%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="configureSite('Regional')">Configure</button>
+                            <button class="action-btn" onclick="viewSiteLogs('Regional')">Logs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">EHR Integration Status</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-primary" onclick="testConnections()">Test All</button>
+                    </div>
+                </div>
+                <div class="integration-grid">
+                    <div class="integration-card" onclick="configureIntegration('Epic')">
+                        <div class="integration-icon">🏥</div>
+                        <div class="integration-name">Epic</div>
+                        <div class="integration-status status-connected">Connected</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">3 sites active</div>
+                    </div>
+                    <div class="integration-card" onclick="configureIntegration('Cerner')">
+                        <div class="integration-icon">🏥</div>
+                        <div class="integration-name">Cerner</div>
+                        <div class="integration-status status-connected">Connected</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">2 sites active</div>
+                    </div>
+                    <div class="integration-card" onclick="configureIntegration('FHIR')">
+                        <div class="integration-icon">🔌</div>
+                        <div class="integration-name">FHIR API</div>
+                        <div class="integration-status status-connected">Connected</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">All sites</div>
+                    </div>
+                    <div class="integration-card" onclick="configureIntegration('HL7')">
+                        <div class="integration-icon">📡</div>
+                        <div class="integration-name">HL7 v2</div>
+                        <div class="integration-status status-connected">Connected</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Legacy systems</div>
+                    </div>
+                    <div class="integration-card" onclick="configureIntegration('Allscripts')">
+                        <div class="integration-icon">🏥</div>
+                        <div class="integration-name">Allscripts</div>
+                        <div class="integration-status status-pending">Pending</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Testing phase</div>
+                    </div>
+                    <div class="integration-card" onclick="configureIntegration('Meditech')">
+                        <div class="integration-icon">🏥</div>
+                        <div class="integration-name">Meditech</div>
+                        <div class="integration-status status-error">Error</div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">Auth failed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">System Health Monitoring</h2>
+                </div>
+                <div class="health-metrics">
+                    <div class="metric-card">
+                        <div class="metric-value">99.7%</div>
+                        <div class="metric-label">System Uptime</div>
+                        <div class="metric-trend trend-good">▲ 0.2% from target</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">85ms</div>
+                        <div class="metric-label">Avg Response Time</div>
+                        <div class="metric-trend trend-good">▼ 12ms improvement</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">23%</div>
+                        <div class="metric-label">CPU Usage</div>
+                        <div class="metric-trend trend-good">Normal</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">54%</div>
+                        <div class="metric-label">Memory Usage</div>
+                        <div class="metric-trend trend-good">Normal</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">2.4M</div>
+                        <div class="metric-label">API Requests/Day</div>
+                        <div class="metric-trend trend-good">▲ 18% growth</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">0.02%</div>
+                        <div class="metric-label">Error Rate</div>
+                        <div class="metric-trend trend-good">▼ Within limits</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">User Management</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-primary" onclick="addUser()">+ Add User</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Dr. Sarah Johnson</strong></td>
+                            <td>sjohnson@memorial.org</td>
+                            <td><span class="role-badge role-provider">Provider</span></td>
+                            <td>2 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="editUser('Sarah Johnson')">Edit</button>
+                                    <button class="action-btn danger" onclick="deactivateUser('Sarah Johnson')">Deactivate</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emily Rodriguez</strong></td>
+                            <td>erodriguez@memorial.org</td>
+                            <td><span class="role-badge role-coordinator">Care Coordinator</span></td>
+                            <td>1 hour ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="editUser('Emily Rodriguez')">Edit</button>
+                                    <button class="action-btn danger" onclick="deactivateUser('Emily Rodriguez')">Deactivate</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Michael Chen</strong></td>
+                            <td>mchen@memorial.org</td>
+                            <td><span class="role-badge role-admin">System Admin</span></td>
+                            <td>30 minutes ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="editUser('Michael Chen')">Edit</button>
+                                    <button class="action-btn danger" onclick="deactivateUser('Michael Chen')">Deactivate</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dr. Raj Patel</strong></td>
+                            <td>rpatel@citymed.org</td>
+                            <td><span class="role-badge role-provider">Provider</span></td>
+                            <td>5 hours ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="editUser('Raj Patel')">Edit</button>
+                                    <button class="action-btn danger" onclick="deactivateUser('Raj Patel')">Deactivate</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jessica Lee</strong></td>
+                            <td>jlee@generalhosp.org</td>
+                            <td><span class="role-badge role-viewer">Viewer</span></td>
+                            <td>1 day ago</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="editUser('Jessica Lee')">Edit</button>
+                                    <button class="action-btn danger" onclick="deactivateUser('Jessica Lee')">Deactivate</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Security & HIPAA Compliance</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-success" onclick="runAudit()">Run Audit</button>
+                    </div>
+                </div>
+                <div class="compliance-grid">
+                    <div class="compliance-item compliant">
+                        <div class="compliance-title">Data Encryption</div>
+                        <div class="compliance-status">✓ AES-256 encryption active</div>
+                        <div class="compliance-date">Last verified: Today</div>
+                    </div>
+                    <div class="compliance-item compliant">
+                        <div class="compliance-title">Access Controls</div>
+                        <div class="compliance-status">✓ Role-based access enforced</div>
+                        <div class="compliance-date">Last audit: Dec 1, 2025</div>
+                    </div>
+                    <div class="compliance-item compliant">
+                        <div class="compliance-title">Audit Logging</div>
+                        <div class="compliance-status">✓ All actions logged</div>
+                        <div class="compliance-date">Retention: 7 years</div>
+                    </div>
+                    <div class="compliance-item warning">
+                        <div class="compliance-title">Password Policy</div>
+                        <div class="compliance-status">⚠ 3 users need password reset</div>
+                        <div class="compliance-date">Action required</div>
+                    </div>
+                    <div class="compliance-item compliant">
+                        <div class="compliance-title">PHI Protection</div>
+                        <div class="compliance-status">✓ HIPAA compliant</div>
+                        <div class="compliance-date">Last review: Nov 28, 2025</div>
+                    </div>
+                    <div class="compliance-item compliant">
+                        <div class="compliance-title">Backup & Recovery</div>
+                        <div class="compliance-status">✓ Daily backups active</div>
+                        <div class="compliance-date">Last backup: 2 hours ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">API Configuration</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-primary" onclick="generateAPIKey()">Generate New Key</button>
+                    </div>
+                </div>
+                <div class="api-config">
+                    <div class="config-row">
+                        <span class="config-label">API Endpoint:</span>
+                        <span class="config-value">https://api.cognitivepath.io/v1</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">WebSocket URL:</span>
+                        <span class="config-value">wss://ws.cognitivepath.io</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Rate Limit:</span>
+                        <span class="config-value">10,000 requests/hour</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Authentication:</span>
+                        <span class="config-value">OAuth 2.0 + API Key</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Data Format:</span>
+                        <span class="config-value">JSON (FHIR R4 compliant)</span>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" onclick="viewAPIDocs()">View API Documentation</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Audit Log</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small btn-primary" onclick="exportAuditLog()">Export Full Log</button>
+                    </div>
+                </div>
+                <div class="audit-log">
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>14:23:45</div>
+                        <div class="audit-content">
+                            <div class="audit-action">User Login</div>
+                            <div class="audit-details">Dr. Sarah Johnson logged in from 192.168.1.45</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>14:18:22</div>
+                        <div class="audit-content">
+                            <div class="audit-action">Patient Record Access</div>
+                            <div class="audit-details">Emily Rodriguez viewed patient MRN-10847</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>14:15:09</div>
+                        <div class="audit-content">
+                            <div class="audit-action">System Configuration Change</div>
+                            <div class="audit-details">Michael Chen updated integration settings for Memorial Hospital</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>14:12:33</div>
+                        <div class="audit-content">
+                            <div class="audit-action">Data Export</div>
+                            <div class="audit-details">Dr. Raj Patel exported patient list (23 records)</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>14:08:17</div>
+                        <div class="audit-content">
+                            <div class="audit-action">User Role Change</div>
+                            <div class="audit-details">Michael Chen promoted Jessica Lee to Coordinator role</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>13:45:28</div>
+                        <div class="audit-content">
+                            <div class="audit-action">Bulk Message Sent</div>
+                            <div class="audit-details">Emily Rodriguez sent message to 45 patients</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>13:32:11</div>
+                        <div class="audit-content">
+                            <div class="audit-action">API Key Generated</div>
+                            <div class="audit-details">Michael Chen created new API key for City Medical Center</div>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Dec 3, 2025<br>13:15:42</div>
+                        <div class="audit-content">
+                            <div class="audit-action">Security Scan Complete</div>
+                            <div class="audit-details">Automated security scan completed - No issues found</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewAlerts() {
+            alert('System Alerts:\n\n' +
+                  '⚠ Warning: 3 users need password reset (expires in 7 days)\n' +
+                  '⚠ Warning: Meditech integration authentication failed\n' +
+                  '⚠ Notice: Scheduled maintenance on Dec 10, 2025 at 2:00 AM EST');
+        }
+
+        function addSite() {
+            alert('Add New Site:\n\n' +
+                  'Complete the following steps:\n' +
+                  '1. Site information and location\n' +
+                  '2. EHR system configuration\n' +
+                  '3. Network and security settings\n' +
+                  '4. User accounts and permissions\n' +
+                  '5. Test connection and go-live\n\n' +
+                  'Estimated setup time: 2-3 hours');
+        }
+
+        function syncAll() {
+            alert('Syncing all sites...\n\n' +
+                  'Synchronizing:\n' +
+                  '• Patient data\n' +
+                  '• User accounts\n' +
+                  '• Configuration settings\n' +
+                  '• Integration status\n\n' +
+                  'Sync completed successfully!');
+        }
+
+        function configureSite(siteName) {
+            alert(`Configure ${siteName}:\n\n` +
+                  'Configuration options:\n' +
+                  '• EHR integration settings\n' +
+                  '• User management\n' +
+                  '• Network configuration\n' +
+                  '• Security policies\n' +
+                  '• Backup schedules\n' +
+                  '• Alert thresholds');
+        }
+
+        function viewSiteLogs(siteName) {
+            alert(`Viewing logs for ${siteName}...\n\n` +
+                  'Available logs:\n' +
+                  '• System activity log\n' +
+                  '• Error log\n' +
+                  '• Integration log\n' +
+                  '• User access log\n' +
+                  '• Performance metrics\n\n' +
+                  'Logs retained for 90 days');
+        }
+
+        function testConnections() {
+            alert('Testing all EHR connections...\n\n' +
+                  '✓ Epic: Connected (Response: 42ms)\n' +
+                  '✓ Cerner: Connected (Response: 38ms)\n' +
+                  '✓ FHIR API: Connected (Response: 25ms)\n' +
+                  '✓ HL7 v2: Connected (Response: 51ms)\n' +
+                  '⚠ Allscripts: Testing... (Pending)\n' +
+                  '✗ Meditech: Failed (Auth error)\n\n' +
+                  'Overall: 4/6 systems operational');
+        }
+
+        function configureIntegration(system) {
+            alert(`Configure ${system} Integration:\n\n` +
+                  'Configuration wizard will guide you through:\n' +
+                  '• Connection credentials\n' +
+                  '• Data mapping rules\n' +
+                  '• Sync frequency\n' +
+                  '• Error handling\n' +
+                  '• Test connection\n\n' +
+                  'Click OK to continue...');
+        }
+
+        function addUser() {
+            alert('Add New User:\n\n' +
+                  'User information required:\n' +
+                  '• Full name\n' +
+                  '• Email address\n' +
+                  '• Role (Admin, Provider, Coordinator, Viewer)\n' +
+                  '• Site assignment\n' +
+                  '• Permissions\n\n' +
+                  'User will receive welcome email with login instructions.');
+        }
+
+        function editUser(userName) {
+            alert(`Edit User: ${userName}\n\n` +
+                  'Available actions:\n' +
+                  '• Update user information\n' +
+                  '• Change role or permissions\n' +
+                  '• Reset password\n' +
+                  '• Modify site access\n' +
+                  '• View activity history');
+        }
+
+        function deactivateUser(userName) {
+            if (confirm(`Deactivate user: ${userName}?\n\n` +
+                       'This will:\n' +
+                       '• Revoke system access\n' +
+                       '• Preserve activity history\n' +
+                       '• Allow future reactivation\n\n' +
+                       'Continue?')) {
+                alert(`✓ User ${userName} has been deactivated.`);
+            }
+        }
+
+        function runAudit() {
+            alert('Running Security & Compliance Audit...\n\n' +
+                  'Checking:\n' +
+                  '✓ Data encryption status\n' +
+                  '✓ Access control policies\n' +
+                  '✓ Audit log integrity\n' +
+                  '✓ Password compliance\n' +
+                  '✓ PHI protection measures\n' +
+                  '✓ Backup systems\n\n' +
+                  'Audit complete: 1 warning found\n' +
+                  '(3 users need password reset)');
+        }
+
+        function generateAPIKey() {
+            const key = 'cp_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            alert('New API Key Generated:\n\n' +
+                  key + '\n\n' +
+                  '⚠ Important: Copy this key now!\n' +
+                  'It will not be shown again for security reasons.\n\n' +
+                  'Rate Limit: 10,000 requests/hour\n' +
+                  'Expires: Never (until revoked)');
+        }
+
+        function viewAPIDocs() {
+            alert('API Documentation:\n\n' +
+                  'Access comprehensive API documentation at:\n' +
+                  'https://docs.cognitivepath.io/api\n\n' +
+                  'Documentation includes:\n' +
+                  '• Authentication guide\n' +
+                  '• Endpoint reference\n' +
+                  '• Request/response examples\n' +
+                  '• Error codes\n' +
+                  '• FHIR resource mapping\n' +
+                  '• Integration tutorials');
+        }
+
+        function exportAuditLog() {
+            alert('📥 Exporting Audit Log...\n\n' +
+                  'Export Configuration:\n' +
+                  '• Date range: Last 90 days\n' +
+                  '• Format: CSV\n' +
+                  '• Records: ~45,000 entries\n' +
+                  '• File size: ~8.5 MB\n\n' +
+                  'Export will be ready for download in 2-3 minutes.\n' +
+                  'Download link will be emailed to you.');
+        }
+
+        console.log('System Management Portal Loaded');
+        console.log('Active Sites: 5');
+        console.log('System Status: Operational');
+        console.log('Uptime: 99.97%');
+    </script>
+</body>
+</html>
