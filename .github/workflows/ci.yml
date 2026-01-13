@@ -134,11 +134,20 @@ jobs:
           npm ci
           echo "Backend build successful"
       
-      - name: Build frontend
-        working-directory: cognitivepath/frontend
-        run: |
           npm ci
           echo "Frontend build successful"
+
+  docker-build:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker images
+        run: docker compose build
+
+
 
 
 

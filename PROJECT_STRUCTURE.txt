@@ -1,0 +1,108 @@
+CognitivePath Project Directory Structure
+==========================================
+
+ROOT: /home/rifat/PROJECTS/cognitivepath
+├── 📄 HTML Prototype Dashboards (Root Level)
+│   ├── index.html                    # Main entry point
+│   ├── provider-dashboard.html       # Provider dashboard
+│   ├── patient-app.html              # Patient mobile app interface
+│   ├── coordinator-dashboard.html    # Care coordinator portal
+│   ├── admin-analytics.html          # Admin analytics dashboard
+│   ├── system-management.html        # System management portal
+│   ├── ai-simulator.html             # AI analysis demo
+│   └── guided-tour.html              # Guided tour
+│
+├── 📚 Documentation
+│   ├── README.md                     # Main project README
+│   ├── SETUP_GUIDE.md                # Complete setup instructions
+│   └── IMPLEMENTATION_SUMMARY.md     # Implementation details
+│
+├── ⚙️ Configuration Files (Root)
+│   ├── package.json                  # Root package.json
+│   ├── package-lock.json
+│   ├── start-server.sh               # Server startup script
+│   └── node_modules/                 # Root dependencies
+│
+└── 📁 cognitivepath/                 # Main project code
+    │
+    ├── 🔧 backend/                   # Node.js/Express Backend API
+    │   ├── 📄 server.js              # Main server entry point
+    │   ├── 📄 package.json           # Backend dependencies
+    │   ├── 📄 jest.config.js         # Jest test configuration
+    │   ├── 📄 env.example            # Environment variables template
+    │   │
+    │   ├── 📁 config/                # Configuration files
+    │   │   ├── database.js           # Database connection
+    │   │   ├── logger.js             # Logging configuration
+    │   │   └── index.js              # Main config
+    │   │
+    │   ├── 📁 controllers/           # Request handlers
+    │   │   ├── authController.js     # Authentication logic
+    │   │   └── patientController.js  # Patient CRUD operations
+    │   │
+    │   ├── 📁 middleware/            # Express middleware
+    │   │   ├── auth.js               # JWT authentication
+    │   │   ├── errorHandler.js       # Error handling
+    │   │   ├── security.js           # Security headers (Helmet, CORS)
+    │   │   └── validation.js         # Input validation
+    │   │
+    │   ├── 📁 models/                # Data models
+    │   │   ├── User.js               # User model
+    │   │   ├── Patient.js            # Patient model
+    │   │   └── index.js              # Models index
+    │   │
+    │   ├── 📁 routes/                # API routes
+    │   │   ├── authRoutes.js         # Authentication routes
+    │   │   ├── patientRoutes.js      # Patient routes
+    │   │   └── index.js              # Routes index
+    │   │
+    │   ├── 📁 migrations/            # Database migrations
+    │   │   ├── 001_initial_schema.sql  # Initial database schema
+    │   │   └── runMigrations.js      # Migration runner
+    │   │
+    │   ├── 📁 tests/                 # Test files
+    │   │   ├── auth.test.js          # Auth tests
+    │   │   ├── patient.test.js       # Patient API tests
+    │   │   └── setup.js              # Test setup
+    │   │
+    │   ├── 📁 logs/                  # Log files (generated at runtime)
+    │   ├── 📁 node_modules/          # Backend dependencies
+    │   ├── 📄 README.md              # Backend README
+    │   └── 📄 API_DOCUMENTATION.md   # API endpoint documentation
+    │
+    └── 📱 frontend/                  # React Native Mobile App
+        ├── 📄 App.js                 # Main app component
+        ├── 📄 app.json               # Expo configuration
+        ├── 📄 babel.config.js        # Babel configuration
+        ├── 📄 package.json           # Frontend dependencies
+        │
+        ├── 📁 src/
+        │   ├── 📁 config/
+        │   │   └── api.js            # API client configuration
+        │   │
+        │   ├── 📁 contexts/
+        │   │   └── AuthContext.js    # Authentication context
+        │   │
+        │   ├── 📁 services/
+        │   │   ├── authService.js    # Authentication API calls
+        │   │   └── patientService.js # Patient API calls
+        │   │
+        │   └── 📁 screens/
+        │       ├── LoginScreen.js
+        │       ├── RegisterScreen.js
+        │       ├── HomeScreen.js
+        │       ├── PatientListScreen.js
+        │       ├── PatientDetailScreen.js
+        │       └── ProfileScreen.js
+        │
+        ├── 📁 node_modules/          # Frontend dependencies
+        └── 📄 README.md              # Frontend README
+
+Key Features:
+- ✅ Full-stack application (Backend API + Frontend Mobile App)
+- ✅ HTML prototype dashboards for demo purposes
+- ✅ JWT authentication
+- ✅ PostgreSQL database with migrations
+- ✅ Complete test suite
+- ✅ API documentation
+

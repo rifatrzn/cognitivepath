@@ -1,0 +1,88 @@
+name: Build iOS App for Apple App Store
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'cognitivepath/frontend/**'
+      - '.github/workflows/build-ios.yml'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: cognitivepath/frontend/package-lock.json
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        working-directory: cognitivepath/frontend
+        run: npm ci
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Configure EAS
+        working-directory: cognitivepath/frontend
+        run: |
+          eas build:configure
+
+      # Build for TestFlight/App Store
+      - name: Build iOS App
+        working-directory: cognitivepath/frontend
+        run: |
+          if [ "${{ github.event.inputs.build_type }}" == "production" ]; then
+            eas build --platform ios --profile production --non-interactive --no-wait
+          else
+            eas build --platform ios --profile preview --non-interactive --no-wait
+          fi
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      # Submit to App Store (optional)
+      - name: Submit to App Store Connect
+        if: github.event.inputs.build_type == 'production'
+        working-directory: cognitivepath/frontend
+        run: |
+          eas submit --platform ios --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: |
+            cognitivepath/frontend/*.ipa
+          retention-days: 30
+

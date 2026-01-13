@@ -1,9 +1,11 @@
 node_modules
 
 # Exclude documentation files (keep only README.md)
-IMPLEMENTATION_SUMMARY.md
-SETUP_GUIDE.md
-PROJECT_STRUCTURE.txt
+# Exclude documentation files (keep only README.md)
+*.md
+!README.md
+!**/README.md
+
 
 # Environment files
 .env

@@ -1,0 +1,42 @@
+version: '3.8'
+
+# Development override for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"  # Expose for local development tools
+    environment:
+      POSTGRES_PASSWORD: dev_password  # Simpler password for dev
+
+  backend:
+    build:
+      target: build  # Use build stage with all dependencies
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+    volumes:
+      # Mount source code for hot reload (requires nodemon or volume mount)
+      - ./cognitivepath/backend:/app
+      - /app/node_modules  # Prevent overwriting node_modules
+      - ./cognitivepath/backend/logs:/app/logs
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        sleep 5 &&
+        npm run migrate &&
+        echo 'Starting development server...' &&
+        npm run dev
+      "
+    # Override to use nodemon for hot reload in dev
+    # Requires nodemon to be in dependencies instead of devDependencies for production
+
+  frontend:
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./cognitivepath/frontend:/app
+      - /app/node_modules
+
+

@@ -1,0 +1,111 @@
+name: Build Android App for Google Play Store
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'cognitivepath/frontend/**'
+      - '.github/workflows/build-android.yml'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'apk'
+        type: choice
+        options:
+          - apk
+          - app-bundle
+
+jobs:
+  build-android:
+    name: Build Android APK/AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: cognitivepath/frontend/package-lock.json
+
+      - name: Setup Java for Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        working-directory: cognitivepath/frontend
+        run: npm ci
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Configure EAS
+        working-directory: cognitivepath/frontend
+        run: |
+          eas build:configure
+
+      # Build APK for testing/internal distribution
+      - name: Build Android APK
+        if: github.event.inputs.build_type == 'apk' || github.event_name == 'push'
+        working-directory: cognitivepath/frontend
+        run: |
+          eas build --platform android --profile preview --non-interactive --no-wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      # Build App Bundle for Google Play Store
+      - name: Build Android App Bundle (AAB)
+        if: github.event.inputs.build_type == 'app-bundle'
+        working-directory: cognitivepath/frontend
+        run: |
+          eas build --platform android --profile production --non-interactive --no-wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+
+      # Alternative: Build locally and upload
+      - name: Build with Expo CLI (Alternative)
+        if: false  # Set to true if you want to use this instead
+        working-directory: cognitivepath/frontend
+        run: |
+          npx expo export:embed
+          npx eas-cli build --platform android --local
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: |
+            cognitivepath/frontend/*.apk
+            cognitivepath/frontend/*.aab
+          retention-days: 30
+
+      # Submit to Google Play Store (optional, requires credentials)
+      - name: Submit to Google Play Store
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'app-bundle'
+        working-directory: cognitivepath/frontend
+        run: |
+          eas submit --platform android --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+
